@@ -1,15 +1,31 @@
 document.addEventListener("DOMContentLoaded", function(e) {
-    const countDown = window.setInterval(timer, 1000)
+    // const countDown = window.setTimeout(counterRun, 0)
     let timerRunning = true
+    let timerId = setInterval(() => {
+        incrementCounter(1)
+    },1000)
+
+    const likeMap = {}
+
+    const incrementCounter = num => {
+        const counter = document.querySelector('#counter')
+        const newNum = timer() + num
+
+        counter.textContent = newNum
+    }
+
+    
+    
 
     function timer() {
         const timer = document.querySelector('#counter')
         const seconds = timer.textContent
         const integer = parseInt(seconds)
-        const newSeconds = integer + 1
         
-        timer.textContent = newSeconds;
+        return integer
     }
+
+    
 
     function clickHandler() {
         const buttons = document.querySelectorAll('button');
@@ -28,26 +44,28 @@ document.addEventListener("DOMContentLoaded", function(e) {
         })
 
         plusButton.addEventListener('click', e => {
-            timer();
+            incrementCounter(1);
         })
 
         heartButton.addEventListener('click', e => {
+            const num = timer();
+
             const likeUl = document.querySelector('.likes')
-
-            likeMap = {}
             
-            //if (likeMap) {
+            if (likeMap[num]) {
 
-            //} else {
-            const likeLi = document.createElement('li')
-            const seconds = document.querySelector('#counter').textContent
-            likeLi.dataset.time = seconds
-            //const numberLikes = 0
-            likeLi.textContent = `${seconds}`;
-            //likeMap= [likeLi]
-            likeUl.append(likeLi)   
-            }
-            console.dir(likeMap)
+                const likeLi = likeMap[num]
+                const newCount = parseInt(likeLi.dataset.likeCount) + 1
+                likeLi.dataset.likeCount = newCount;
+                likeLi.textContent = `${num} has been like ${newCount} times`
+            } else {
+                const likeLi = document.createElement('li')
+                likeLi.dataset.likeCount = 1
+                likeLi.textContent = `${num} has been like 1 time`;
+                likeMap[num] = likeLi
+                likeUl.append(likeLi);
+                   
+            } 
         })
 
         pauseButton.addEventListener('click', e => {
@@ -55,14 +73,17 @@ document.addEventListener("DOMContentLoaded", function(e) {
             function pause(){
                 console.log(pauseButton.textContent)
                 if (timerRunning) {
-                    clearInterval(countDown);
+                    clearInterval(timerId);
                     minusButton.disabled = true;
                     plusButton.disabled = true;
                     heartButton.disabled = true;
                     pauseButton.textContent = "resume";
                     timerRunning = false;
                 } else {
-                    setInterval(timer, 1000);
+                    timerId = setInterval(() => {
+                        incrementCounter(1)
+                    },1000)
+
                     minusButton.disabled = false;
                     plusButton.disabled = false;
                     heartButton.disabled = false;
